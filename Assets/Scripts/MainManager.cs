@@ -11,17 +11,22 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text HighScoreText;
     public GameObject GameOverText;
-    
+
     private bool m_Started = false;
     private int m_Points;
-    
+
+    private string playerName;
+
     private bool m_GameOver = false;
 
     
     // Start is called before the first frame update
     void Start()
     {
+        HighScoreText.text = PlayerManager.instance.bestScoreDisplay;
+        playerName = PlayerManager.instance.playerName;
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -65,12 +70,19 @@ public class MainManager : MonoBehaviour
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = playerName + " - " + $"Score : {m_Points}";
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        if (m_Points > PlayerManager.instance.bestScore)
+        {
+            HighScoreText.text = PlayerManager.instance.bestScoreDisplay;
+            PlayerManager.instance.bestScore = m_Points;
+            PlayerManager.instance.SaveBestScore();
+        }
     }
 }
